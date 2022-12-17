@@ -78,6 +78,7 @@ const SCALE_Y : f32 = SCREEN_HEIGHT as f32 * 0.5;
 
 
 ///this is setting up a loop that will run indefinitely and create a series of frames for animation.
+///the cube_to_world matrix is a 4x4 matrix that to be used to rotate an object around the origin in 3D.
 fn main() {
     for frame_number in 0.. {
         let mut frame = [[b' ';SCREEN_WIDTH]; SCREEN_HEIGHT];
@@ -85,7 +86,6 @@ fn main() {
         let t = frame_number as f32 * 0.01;
         let (c, s) = (t.cos(), t.sin());
 
-        ///the cube_to_world matrix is a 4x4 matrix that to be used to rotate an object around the origin in 3D.
         let cube_to_world = Matrix([
             // Each row is a column of a matrix.
             [  c, 0.0,   s, 0.0],
@@ -126,7 +126,8 @@ fn main() {
     }
 }
 
-
+///the function cull takes three parameters: p0, p1, and p2, which are arrays of two f32 values. The function returns a boolean value.
+/// indicating whether the triangle formed by the three points is clockwise or counterclockwise.
 fn cull(p0: [f32; 2], p1: [f32; 2], p2: [f32; 2]) -> bool {
     let dx = [p1[0] - p0[0], p2[0] - p1[0]];
     let dy = [p1[1] - p0[1], p2[1] - p1[1]];
