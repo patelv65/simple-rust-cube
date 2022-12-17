@@ -9,13 +9,20 @@
 //!    |/     |/   
 //! 1  +------+    3
 
-
+///This code defines a new struct called Matrix that consists of a fixed-size array of 4 arrays of 4 f32 values. 
+///The #[derive(Debug, Clone, Copy)] line is called an attribute.
+///it tells the Rust compiler to automatically implement the Debug, Clone, and Copy traits for the Matrix struct.
 #[derive(Debug, Clone, Copy)]
 struct Matrix([[f32; 4]; 4]);
 
+///This code defines a new struct called Vector that consists of a fixed-size array of 4 f32 values.
 #[derive(Debug, Clone, Copy)]
 struct Vector([f32; 4]);
 
+///These are the vertices of a cube. Each vertex is represented as a Vector struct, 
+///which contains an array of four f32 values. The first three values represent the x, y, 
+///and z coordinates of the vertex in 3D space, and the fourth value is a homogeneous coordinate. 
+///The vertices are defined in local space, meaning that they represent the positions of the points relative to the center of the cube.
 const VERTICES : [Vector; 8] = [
     Vector([-1.0, -1.0, -1.0, 1.0]),
     Vector([-1.0, -1.0,  1.0, 1.0]),
@@ -27,6 +34,9 @@ const VERTICES : [Vector; 8] = [
     Vector([ 1.0,  1.0,  1.0, 1.0]),
 ];
 
+//This code defines a constant array of 6 arrays of 4 u8 values called FACES. 
+///Each inner array represents the indices of the vertices of a face of a cube in 3D space. 
+///For example, the first inner array [1, 5, 7, 3] represents the vertices with indices 1, 5, 7, and 3 in a list of vertices.
 const FACES : [[u8; 4]; 6] = [
     [1, 5, 7, 3],
     [3, 7, 6, 2],
@@ -36,6 +46,11 @@ const FACES : [[u8; 4]; 6] = [
     [5, 4, 6, 7],
 ];
 
+
+///This function, matrix_times_vector, calculates the product of a matrix and a vector.
+///The function starts by destructuring the matrix and vector into their individual components. 
+///The matrix is destructured into 4 [f32; 4] arrays, and the vector is destructured into an array of 4 f32 values.
+///The function then calculates the product of the matrix and the vector by taking the weighted sum of the columns of the matrix.
 fn matrix_times_vector(m: &Matrix, v: &Vector) -> Vector {
     let [mx, my, mz, mw] = &m.0;
     let [x, y, z, w] = v.0;
@@ -48,15 +63,21 @@ fn matrix_times_vector(m: &Matrix, v: &Vector) -> Vector {
     ])
 }
 
+///The SCREEN_WIDTH and SCREEN_HEIGHT constants are of type usize and represent the width and height of the screen 
 const SCREEN_WIDTH : usize = 80;
 const SCREEN_HEIGHT : usize = 40;
+
+///The OFFSET_X and OFFSET_Y constants are of type f32 and represent the horizontal and vertical offsets of the screen from the origin in pixels.
 const OFFSET_X : f32 = SCREEN_WIDTH as f32 * 0.5;
 const OFFSET_Y : f32 = SCREEN_HEIGHT as f32 * 0.5;
+
+///The SCALE_X and SCALE_Y constants are also of type f32 and represent the horizontal and vertical scaling factors for the screen. 
+///These factors are used to stretch or shrink the screen along the x and y axes
 const SCALE_X : f32 = SCREEN_WIDTH as f32 * 0.5;
 const SCALE_Y : f32 = SCREEN_HEIGHT as f32 * 0.5;
 
 
-
+///this is setting up a loop that will run indefinitely and create a series of frames for animation.
 fn main() {
     for frame_number in 0.. {
         let mut frame = [[b' ';SCREEN_WIDTH]; SCREEN_HEIGHT];
@@ -64,6 +85,7 @@ fn main() {
         let t = frame_number as f32 * 0.01;
         let (c, s) = (t.cos(), t.sin());
 
+        ///the cube_to_world matrix is a 4x4 matrix that to be used to rotate an object around the origin in 3D.
         let cube_to_world = Matrix([
             // Each row is a column of a matrix.
             [  c, 0.0,   s, 0.0],
@@ -104,13 +126,15 @@ fn main() {
     }
 }
 
+
 fn cull(p0: [f32; 2], p1: [f32; 2], p2: [f32; 2]) -> bool {
     let dx = [p1[0] - p0[0], p2[0] - p1[0]];
     let dy = [p1[1] - p0[1], p2[1] - p1[1]];
     dx[0] * dy[1] > dx[1] * dy[0]
 }
 
-
+///This function is drawing a line on a 2D grid represented by the frame array.
+///The line is drawn by setting the value of certain cells in the array to the ASCII values for a vertical bar (|) or a horizontal dash (-).
 fn draw_line(frame: &mut [[u8; SCREEN_WIDTH]; SCREEN_HEIGHT], start: [f32; 2], end: [f32; 2]) {
     let [x0, y0] = start;
     let [x1, y1] = end;
